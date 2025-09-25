@@ -1,8 +1,8 @@
 // Sample events data
 const events = [
-  { id: 1, name: "Tech Fest 2025", date: "2025-10-10", location: "Main Hall", price: "N$50" },
+  { id: 1, name: "Tech Fest 2025", date: "2025-10-10", location: "Auditorium Building", price: "N$50" },
   { id: 2, name: "Cultural Night", date: "2025-10-20", location: "Auditorium", price: "N$30" },
-  { id: 3, name: "Sports Gala", date: "2025-11-01", location: "Sports Field", price: "Free" }
+  { id: 3, name: "Sports Gala", date: "2025-11-01", location: "Sam Najoma Stadium", price: "Free" }
 ];
 
 const eventsList = document.getElementById("events-list");

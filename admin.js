@@ -36,6 +36,9 @@
     <p id="statusMessage"></p>
   </main>
 <button id="toggleTheme" class="theme-toggle">🌓 Toggle Theme</button>
+document.getElementById('toggleTheme').addEventListener('click', () => {
+  document.body.classList.toggle('light-mode');
+});
 
   
   <footer>

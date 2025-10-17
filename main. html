@@ -16,6 +16,7 @@
       <!-- Events will be loaded here using JavaScript -->
     </section>
   </main>
+<button id="toggleTheme" class="theme-toggle">🌓 Toggle Theme</button>
 
   <footer>
     <p>© 2025 Event Tickets</p>

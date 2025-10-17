@@ -52,4 +52,8 @@ function updateClock() {
   clock.textContent = `${hours}:${minutes}:${seconds}`;
 }
 setInterval(updateClock, 1000);
-updateClock();
+
+updateClock
+ document.getElementById('toggleTheme').addEventListener('click', () => {
+  document.body.classList.toggle('light-mode');
+});

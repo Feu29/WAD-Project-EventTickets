@@ -35,7 +35,9 @@
 
     <p id="statusMessage"></p>
   </main>
+<button id="toggleTheme" class="theme-toggle">🌓 Toggle Theme</button>
 
+  
   <footer>
     <p>© 2025 Event Tickets – Admin Panel</p>
   </footer>

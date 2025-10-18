@@ -23,5 +23,9 @@
   </footer>
 
   <script src="logic.js"></script>
+  <script src="firstjs.js"></script>
+  <script src="main.js"></script>
+  <script src="theme.js"></script>
 </body>
 </html>
+

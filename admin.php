@@ -5,8 +5,7 @@ session_start();
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "event_database"; // make sure this matches your database name
-
+$dbname = "event_database"; 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 // Check connection
@@ -18,13 +17,13 @@ if ($conn->connect_error) {
 if (isset($_POST['delete_event'])) {
   $event_id = intval($_POST['event_id']);
 
-  // Delete image file first (optional but recommended)
+  // Delete image file first 
   $getImage = $conn->prepare("SELECT image_path FROM events WHERE id = ?");
   $getImage->bind_param("i", $event_id);
   $getImage->execute();
   $getImage->bind_result($image_path);
   if ($getImage->fetch() && file_exists($image_path)) {
-    unlink($image_path); // delete image file from folder
+    unlink($image_path);
   }
   $getImage->close();
 

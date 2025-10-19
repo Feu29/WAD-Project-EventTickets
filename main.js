@@ -1,20 +1,15 @@
- //LOAD EVENTS FROM DATABASE
+// LOAD EVENTS FROM DATABASE (optional dynamic load)
 async function loadEvents() {
   const container = document.getElementById("events-container");
 
   try {
     const response = await fetch("events.php");
-    
-   
-    if (events.length === 0) {
-      container.innerHTML = "<p>No events available right now.</p>";
-      return;
-    }
+    const events = await response.json();
+
     if (!Array.isArray(events) || events.length === 0) {
       container.innerHTML = "<p>No events available right now.</p>";
       return;
     }
-
 
     container.innerHTML = ""; // Clear previous content
 
@@ -40,8 +35,7 @@ async function loadEvents() {
     console.error("Error loading events:", error);
   }
 }
-document.addEventListener("DOMContentLoaded", loadEvents);
-loadEvents();
+
 // ⏰ CLOCK FUNCTION
 function updateClock() {
   const clock = document.getElementById("clock");
@@ -52,8 +46,27 @@ function updateClock() {
   clock.textContent = `${hours}:${minutes}:${seconds}`;
 }
 setInterval(updateClock, 1000);
+updateClock();
 
-updateClock
- document.getElementById('toggleTheme').addEventListener('click', () => {
-  document.body.classList.toggle('light-mode');
+// 🌙 DARK/LIGHT MODE TOGGLE
+const themeButton = document.getElementById('toggleTheme');
+
+// Load saved theme from localStorage
+if (localStorage.getItem('theme') === 'dark') {
+  document.body.classList.add('dark-mode');
+  themeButton.textContent = 'Dark Mode';
+}
+
+themeButton.addEventListener('click', () => {
+  document.body.classList.toggle('dark-mode');
+
+  if (document.body.classList.contains('dark-mode')) {
+    themeButton.textContent = 'Dark Mode';
+    localStorage.setItem('theme', 'dark');
+  } else {
+    themeButton.textContent = 'Light Mode';
+    localStorage.setItem('theme', 'light');
+  }
 });
+
+document.addEventListener("DOMContentLoaded", loadEvents);

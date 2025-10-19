@@ -88,6 +88,6 @@ $conn->close();
 
  
   <script src="main.js"></script>
-  <script src="blues.js"></script>
+  <script src="blues.css"></script>
 </body>
 </html>

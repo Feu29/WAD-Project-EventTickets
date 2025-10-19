@@ -116,35 +116,43 @@ body {
   }
 }
 
-/* DARK MODE STYLES */
+
 body.dark-mode {
-  background: #1a1a1a;
-  color: #f0f0f0;
+  background: #121212;
+  color: #e0e0e0;
 }
+
 
 body.dark-mode .header {
-  background: #003366;
-  color: #fff;
+  background: #1e1e1e;
+  color: #ffffff;
 }
+
 
 body.dark-mode .header ul li a {
-  color: #f0f0f0;
+  color: #ffffff;
 }
+
 
 body.dark-mode .event-card {
-  background: #2a2a2a;
-  color: #f0f0f0;
-  box-shadow: 0 6px 15px rgba(255, 255, 255, 0.05);
+  background: #2b2b2b;
+  color: #e0e0e0;
+  box-shadow: 0 6px 12px rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
 }
 
-body.dark-mode .event-card p {
-  color: #ccc;
-}
 
-body.dark-mode .event-card .book-btn {
-  background: #0059b3;
-}
-
-body.dark-mode .event-card .book-btn:hover {
+body.dark-mode .book-btn {
   background: #0073e6;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+
+body.dark-mode .book-btn:hover {
+  background: #3399ff;
 }

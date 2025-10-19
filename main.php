@@ -100,7 +100,6 @@ $conn->close();
 
 <!-- Your Booked Events -->
 <hr style="margin: 40px 0;">
-<h2 style="text-align:center; color:#004d99;">🎟️ Your Booked Events</h2>
 <div class="row">
 <?php
 $conn = new mysqli("localhost", "root", "", "event_database");

@@ -3,6 +3,7 @@ body {
   background: #f4f9ff;
   margin: 0;
   padding: 0;
+  color: #000;
 }
 
 /* HEADER */
@@ -113,4 +114,37 @@ body {
   .event-card {
     width: 80%;
   }
+}
+
+/* DARK MODE STYLES */
+body.dark-mode {
+  background: #1a1a1a;
+  color: #f0f0f0;
+}
+
+body.dark-mode .header {
+  background: #003366;
+  color: #fff;
+}
+
+body.dark-mode .header ul li a {
+  color: #f0f0f0;
+}
+
+body.dark-mode .event-card {
+  background: #2a2a2a;
+  color: #f0f0f0;
+  box-shadow: 0 6px 15px rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .event-card p {
+  color: #ccc;
+}
+
+body.dark-mode .event-card .book-btn {
+  background: #0059b3;
+}
+
+body.dark-mode .event-card .book-btn:hover {
+  background: #0073e6;
 }

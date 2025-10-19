@@ -63,7 +63,6 @@ $conn->close();
       <li><a href="#">Help</a></li>
     </ul>
 
- 
     <button id="toggleTheme" style="margin-left:20px; padding:6px 12px; border:none; border-radius:6px; cursor:pointer;">
        Light Mode
     </button>
@@ -73,21 +72,19 @@ $conn->close();
 
   <div class="row" id="events-container">
     <?php foreach($events as $event): ?>
-      <div class="card">
+      <div class="event-card">
         <img src="<?= htmlspecialchars($event['image_path']) ?>" alt="<?= htmlspecialchars($event['event_name']) ?>">
         <h3><?= htmlspecialchars($event['event_name']) ?></h3>
         <p><?= htmlspecialchars($event['description']) ?></p>
         <p><strong>Date:</strong> <?= htmlspecialchars($event['event_date']) ?></p>
         <form method="POST" action="book.php">
           <input type="hidden" name="event_id" value="<?= $event['id'] ?>">
-          <button type="submit" name="book_event">Book Seat</button>
+          <button type="submit" name="book_event" class="book-btn">Book Seat</button>
         </form>
       </div>
     <?php endforeach; ?>
   </div>
 
- 
   <script src="main.js"></script>
-  <script src="blues.css"></script>
 </body>
 </html>

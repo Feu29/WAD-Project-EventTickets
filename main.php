@@ -63,9 +63,9 @@ $conn->close();
       <li><a href="#">Help</a></li>
     </ul>
 
-    <!-- ✅ Add the theme toggle button -->
+ 
     <button id="toggleTheme" style="margin-left:20px; padding:6px 12px; border:none; border-radius:6px; cursor:pointer;">
-      ☀️ Light Mode
+       Light Mode
     </button>
 
     <div id="clock"></div>
@@ -86,8 +86,8 @@ $conn->close();
     <?php endforeach; ?>
   </div>
 
-  <!-- ✅ Load scripts at the end -->
+ 
   <script src="main.js"></script>
-  <script src="theme.js"></script>
+  <script src="blues.js"></script>
 </body>
 </html>

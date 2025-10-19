@@ -6,14 +6,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Log In</title>
-  <link rel="stylesheet" href="login.css">
+  <link rel="stylesheet" href="style1.css">
 </head>
 <body>
   <div class="header">
     <img src="logo.png" alt="logo" width="120">
     <ul>
-      <li><a href="SignUpPage.html">SignUp</a></li>
-      <li><a href="logIn.html">LogIn</a></li>
+      <li><a href="signup.php">SignUp</a></li
       <li><a href="#">Help</a></li>
     </ul>
     <div id="clock"></div>

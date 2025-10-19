@@ -1,4 +1,4 @@
-// ⏰ CLOCK FUNCTION
+// ⏰ CLOCK FUNCTION 
 function updateClock() {
   const clock = document.getElementById("clock");
   const now = new Date();
@@ -16,8 +16,7 @@ async function loadEvents() {
 
   try {
     const response = await fetch("events.php");
-    
-    // Check for server errors
+
     if (!response.ok) {
       throw new Error(`Server error: ${response.status}`);
     }
@@ -29,10 +28,8 @@ async function loadEvents() {
       return;
     }
 
-    // Clear previous content
     container.innerHTML = "";
 
-    // Display each event as a card
     events.forEach(event => {
       const card = document.createElement("div");
       card.className = "event-card";
@@ -47,7 +44,6 @@ async function loadEvents() {
           <button type="submit" class="book-btn">Book Seat</button>
         </form>
       `;
-
       container.appendChild(card);
     });
   } catch (error) {
@@ -56,5 +52,26 @@ async function loadEvents() {
   }
 }
 
-// Run on page load
 document.addEventListener("DOMContentLoaded", loadEvents);
+
+// 🌙 DARK/LIGHT MODE TOGGLE
+const themeButton = document.getElementById("toggleTheme");
+
+// Load saved theme from localStorage
+if (localStorage.getItem("theme") === "dark") {
+  document.body.classList.add("dark-mode");
+  themeButton.textContent = "Dark Mode";
+}
+
+// Toggle theme
+themeButton.addEventListener("click", () => {
+  document.body.classList.toggle("dark-mode");
+
+  if (document.body.classList.contains("dark-mode")) {
+    themeButton.textContent = "Dark Mode";
+    localStorage.setItem("theme", "dark");
+  } else {
+    themeButton.textContent = "Light Mode";
+    localStorage.setItem("theme", "light");
+  }
+});

@@ -37,7 +37,7 @@ if (isset($_POST['book_event'])) {
 
     mail($user_email, $subject, $message, $headers);
 
-    echo "<script>alert('Booking successful! Check your email for the code.');</script>";
+    
 }
 
 // Fetch events

@@ -2,7 +2,7 @@
 session_start();
 
 if (!isset($_SESSION['email'])) {
-    header("Location: login.html");
+    header("Location: login.php");
     exit;
 }
 
@@ -14,35 +14,35 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Get the event ID
-if (!isset($_POST['event_id'])) {
-    die("Invalid request.");
+if (isset($_POST['book_event'])) {
+    $event_id = intval($_POST['event_id']);
+    $booking_code = strtoupper(substr(md5(uniqid(rand(), true)), 0, 8));
+
+    // Check how many seats this user has already booked for this event
+    $check_stmt = $conn->prepare("SELECT COUNT(*) as seat_count FROM bookings WHERE user_email = ? AND event_id = ?");
+    $check_stmt->bind_param("si", $user_email, $event_id);
+    $check_stmt->execute();
+    $check_result = $check_stmt->get_result()->fetch_assoc();
+    $check_stmt->close();
+
+    if ($check_result['seat_count'] >= 2) {
+        echo "<script>alert('You cannot book more than 2 seats for this event.');</script>";
+    } else {
+        // Insert booking
+        $stmt = $conn->prepare("INSERT INTO bookings (user_email, event_id, booking_code) VALUES (?, ?, ?)");
+        $stmt->bind_param("sis", $user_email, $event_id, $booking_code);
+        $stmt->execute();
+        $stmt->close();
+
+        // Send email
+        $subject = "Your Booking Code";
+        $message = "Thank you for booking!\nYour booking code for the event is: $booking_code";
+        $headers = "From: noreply@universityevents.com";
+        mail($user_email, $subject, $message, $headers);
+
+        echo "<script>alert('Booking successful! Check your email for the code.');</script>";
+    }
 }
-
-$event_id = intval($_POST['event_id']);
-$booking_code = strtoupper(substr(md5(uniqid(rand(), true)), 0, 8));
-$seat_number = rand(1, 200); // Generate random seat number (or use seat allocation logic)
-
-// Insert booking
-$stmt = $conn->prepare("INSERT INTO bookings (user_email, event_id, booking_code, seat_number) VALUES (?, ?, ?, ?)");
-$stmt->bind_param("sisi", $user_email, $event_id, $booking_code, $seat_number);
-$stmt->execute();
-$stmt->close();
-
-// Get event name for email
-$event_query = $conn->prepare("SELECT event_name FROM events WHERE id = ?");
-$event_query->bind_param("i", $event_id);
-$event_query->execute();
-$event_query->bind_result($event_name);
-$event_query->fetch();
-$event_query->close();
-
-// Send email
-$subject = " Your Booking Confirmation - $event_name";
-$message = "Hi there,\n\nYou have successfully booked a seat for *$event_name*.\n\nSeat Number: $seat_number\nBooking Code: $booking_code\n\nThank you for using our system!";
-$headers = "From: noreply@universityevents.com";
-
-mail($user_email, $subject, $message, $headers);
 
 $conn->close();
 

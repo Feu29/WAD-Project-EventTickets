@@ -7,18 +7,22 @@ if (!isset($_SESSION['email'])) {
     echo json_encode(["error" => "Not logged in"]);
     exit;
 }
+
 $user_email = $_SESSION['email'];
 
+// Database connection
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "event_db";
+$dbname = "event_database";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
-
 if ($conn->connect_error) {
-   echo  json_encode(["error" => "Database connection failed: " . $conn->connect_error]);
+    echo json_encode(["error" => "Database connection failed: " . $conn->connect_error]);
+    exit;
 }
+
+// Handle booking
 if (isset($_POST['book_event'])) {
     $event_id = intval($_POST['event_id']);
     $booking_code = strtoupper(substr(md5(uniqid(rand(), true)), 0, 8));
@@ -31,7 +35,7 @@ if (isset($_POST['book_event'])) {
    
 }
 
-
+// Fetch events
 $sql = "SELECT id, event_name, description, event_date, image_path FROM events ORDER BY event_date ASC";
 $result = $conn->query($sql);
 
@@ -40,16 +44,13 @@ if (!$result) {
     exit;
 }
 
-
 $events = [];
+while ($row = $result->fetch_assoc()) {
+    $events[] = $row;
+}
 
-
-    while($row = $result->fetch_assoc()) {
-        $events[] = $row;
-    }
 $conn->close();
 
+// Return events as JSON
 echo json_encode($events);
-
-
 ?>

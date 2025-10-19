@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// Check if user is logged in
+// Make sure user is logged in
 if (!isset($_SESSION['email'])) {
     header("Location: logIn.php");
     exit;
@@ -30,14 +30,8 @@ if (isset($_POST['book_event'])) {
     $stmt->execute();
     $stmt->close();
 
-    // Send email
-    $subject = "Your Booking Code";
-    $message = "Thank you for booking!\nYour booking code for the event is: $booking_code";
-    $headers = "From: noreply@universityevents.com";
-
-    mail($user_email, $subject, $message, $headers);
-
-    
+  
+   
 }
 
 // Fetch events
@@ -48,6 +42,11 @@ if (!$result) {
     die("Query failed: " . $conn->error);
 }
 
+if ($result->num_rows === 0) {
+    die("No events found in the database.");
+}
+
+// Store events in array
 $events = [];
 while ($row = $result->fetch_assoc()) {
     $events[] = $row;
@@ -62,6 +61,35 @@ $conn->close();
 <meta charset="UTF-8">
 <title>University Event Ticketing</title>
 <link rel="stylesheet" href="blues.css">
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const bookingCode = this.getAttribute('data-code');
+            if (!confirm('Are you sure you want to cancel this booking?')) return;
+
+            fetch('delete_booking.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'booking_code=' + encodeURIComponent(bookingCode)
+            })
+            .then(response => response.text())
+            .then(message => {
+                alert(message);
+                // Remove the card from DOM if successful
+                if (message.includes('successfully')) {
+                    const card = document.getElementById('booking-' + bookingCode);
+                    if (card) card.remove();
+                }
+            })
+            .catch(err => alert('Error deleting booking.'));
+        });
+    });
+});
+</script>
+
+
+
 </head>
 <body>
 
@@ -73,40 +101,49 @@ $conn->close();
       <li><a href="signUp.php">SignUp</a></li>
       <li><a href="#">Help</a></li>
     </ul>
-
-    <!-- Theme Toggle Button -->
-    <button id="toggleTheme" style="margin-left:20px; padding:6px 12px; border:none; border-radius:6px; cursor:pointer;">
-        Light Mode
-    </button>
-
     <div id="clock"></div>
 </div>
 
 <!-- Events -->
 <div class="row" id="events-container">
 <?php foreach($events as $event): ?>
-  <div class="event-card">
-    <img src="<?= htmlspecialchars($event['image_path']) ?>" alt="<?= htmlspecialchars($event['event_name']) ?>" class="event-image">
+  <div class="card">
+    <img src="<?= htmlspecialchars($event['image_path']) ?>" alt="<?= htmlspecialchars($event['event_name']) ?>">
     <h3><?= htmlspecialchars($event['event_name']) ?></h3>
     <p><?= htmlspecialchars($event['description']) ?></p>
     <p><strong>Date:</strong> <?= htmlspecialchars($event['event_date']) ?></p>
     <form method="POST" action="book.php">
       <input type="hidden" name="event_id" value="<?= $event['id'] ?>">
-      <button type="submit" name="book_event" class="book-btn">Book Seat</button>
+      <button type="submit" name="book_event">Book Seat</button>
     </form>
   </div>
 <?php endforeach; ?>
 </div>
-
-<!-- Your Booked Events -->
-<hr style="margin: 40px 0;">
-<div class="row">
 <?php
+
+
+if (!isset($_SESSION['email'])) {
+    header("Location: login.html");
+    exit;
+}
+
+$user_email = $_SESSION['email'];
+
 $conn = new mysqli("localhost", "root", "", "event_database");
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// Success message after booking
+if (isset($_GET['success'])) {
+    echo "<p style='color:green; text-align:center; font-weight:bold;'>🎉 Booking successful! Check your email for the code.</p>";
+}
+
+// Fetch all events for display
+$sql = "SELECT * FROM events ORDER BY event_date ASC";
+$events_result = $conn->query($sql);
+
+// Fetch user bookings
 $bookings_sql = "
     SELECT e.event_name, e.event_date, b.booking_code, b.seat_number 
     FROM bookings b
@@ -118,15 +155,24 @@ $stmt = $conn->prepare($bookings_sql);
 $stmt->bind_param("s", $user_email);
 $stmt->execute();
 $bookings_result = $stmt->get_result();
+?>
 
+<div class="row" id="events-container"></div>
+
+<hr style="margin: 40px 0;">
+
+<h2 style="text-align:center; color:#004d99;">🎟️ Your Booked Events</h2>
+<div class="row">
+<?php
 if ($bookings_result->num_rows > 0) {
     while ($booking = $bookings_result->fetch_assoc()) {
         echo "
-        <div class='event-card'>
+        <div class='event-card' id='booking-{$booking['booking_code']}'>
             <h3>{$booking['event_name']}</h3>
             <p><strong>Date:</strong> {$booking['event_date']}</p>
             <p><strong>Seat:</strong> {$booking['seat_number']}</p>
             <p><strong>Code:</strong> {$booking['booking_code']}</p>
+            <button class='delete-btn' data-code='{$booking['booking_code']}'>🗑 Cancel Booking</button>
         </div>
         ";
     }
@@ -134,7 +180,10 @@ if ($bookings_result->num_rows > 0) {
     echo "<p style='text-align:center; color:#555;'>You haven’t booked any events yet.</p>";
 }
 ?>
+
 </div>
+
+
 
 <script src="main.js"></script>
 </body>

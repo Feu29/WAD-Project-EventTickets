@@ -13,30 +13,6 @@ if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
 }
 
-// Handle delete request
-if (isset($_POST['delete_event'])) {
-  $event_id = intval($_POST['event_id']);
-
-  // Delete image file first 
-  $getImage = $conn->prepare("SELECT image_path FROM events WHERE id = ?");
-  $getImage->bind_param("i", $event_id);
-  $getImage->execute();
-  $getImage->bind_result($image_path);
-  if ($getImage->fetch() && file_exists($image_path)) {
-    unlink($image_path);
-  }
-  $getImage->close();
-
-  // Delete event record from database
-  $delete = $conn->prepare("DELETE FROM events WHERE id = ?");
-  $delete->bind_param("i", $event_id);
-  $delete->execute();
-  $delete->close();
-
-  echo "<script>alert('Event deleted successfully.'); window.location='admin.php';</script>";
-  exit;
-}
-
 // Fetch events from database
 $sql = "SELECT * FROM events ORDER BY id DESC";
 $result = $conn->query($sql);
@@ -50,40 +26,34 @@ $result = $conn->query($sql);
   <title>Admin | Event Management</title>
   <link rel="stylesheet" href="admin.css">
   <style>
-    /* Simple styling for delete button */
     .delete-btn {
-      background: #e60000;
-      color: #fff;
-      border: none;
+      background: #e63946;
+      color: white;
       padding: 6px 12px;
-      border-radius: 4px;
+      border: none;
+      border-radius: 5px;
       cursor: pointer;
-      font-size: 0.9rem;
-      transition: background 0.2s ease;
+      text-decoration: none;
+      font-size: 14px;
     }
-
     .delete-btn:hover {
-      background: #ff3333;
-    }
-
-    table img {
-      width: 80px;
-      height: 60px;
-      object-fit: cover;
-      border-radius: 6px;
+      background: #c1121f;
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    <h1>Event Management - Admin Panel</h1>
+  <!-- HEADER -->
+  <header class="header">
+    <h1>🎟️ Event Management - Admin Dashboard</h1>
     <div class="clock-container">
       <div id="clock"></div>
     </div>
-  </div>
+  </header>
 
+  <!-- MAIN DASHBOARD -->
   <div class="dashboard">
-    <!-- LEFT: ADD NEW EVENT -->
+
+    <!-- LEFT: EVENT FORM -->
     <div class="form-section">
       <h2>Add New Event</h2>
       <form action="addevent.php" method="POST" enctype="multipart/form-data">
@@ -121,20 +91,19 @@ $result = $conn->query($sql);
           <?php
           if ($result && $result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
-              echo "<tr>";
-              echo "<td>" . $row['id'] . "</td>";
-              echo "<td><img src='" . htmlspecialchars($row['image_path']) . "' alt='Event Image'></td>";
-              echo "<td>" . htmlspecialchars($row['event_name']) . "</td>";
-              echo "<td>" . htmlspecialchars($row['event_date']) . "</td>";
-              echo "<td>" . htmlspecialchars($row['description']) . "</td>";
-              echo "<td>
-                      <form method='POST' style='display:inline;' onsubmit='return confirmDelete();'>
-                        <input type='hidden' name='event_id' value='" . $row['id'] . "'>
-                        <button type='submit' name='delete_event' class='delete-btn'>Delete</button>
-                      </form>
-                    </td>";
-              echo "</tr>";
-            }
+    $id = $row['id'];
+    echo "<tr id='event-$id'>";
+    echo "<td>" . $id . "</td>";
+    echo "<td><img src='" . $row['image_path'] . "' alt='Event Image' width='80'></td>";
+    echo "<td>" . htmlspecialchars($row['event_name']) . "</td>";
+    echo "<td>" . htmlspecialchars($row['event_date']) . "</td>";
+    echo "<td>" . htmlspecialchars($row['description']) . "</td>";
+    echo "<td>
+            <button class='delete-btn' data-id='$id'>🗑 Delete</button>
+          </td>";
+    echo "</tr>";
+}
+
           } else {
             echo "<tr><td colspan='6'>No events found.</td></tr>";
           }
@@ -144,7 +113,7 @@ $result = $conn->query($sql);
     </div>
   </div>
 
-  <!-- CLOCK + DELETE CONFIRMATION -->
+  <!-- CLOCK SCRIPT -->
   <script>
     function updateClock() {
       const clock = document.getElementById("clock");
@@ -156,12 +125,34 @@ $result = $conn->query($sql);
     }
     setInterval(updateClock, 1000);
     updateClock();
-
-    function confirmDelete() {
-      return confirm("Are you sure you want to delete this event?");
-    }
   </script>
 </body>
 </html>
 
 <?php $conn->close(); ?>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const eventId = this.getAttribute('data-id');
+            if (!confirm('Are you sure you want to delete this event?')) return;
+
+            fetch('delete_event.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'event_id=' + encodeURIComponent(eventId)
+            })
+            .then(response => response.text())
+            .then(message => {
+                alert(message);
+                if (message.includes('successfully')) {
+                    const row = document.getElementById('event-' + eventId);
+                    if (row) row.remove();
+                }
+            })
+            .catch(err => alert('Error deleting event.'));
+        });
+    });
+});
+</script>
+

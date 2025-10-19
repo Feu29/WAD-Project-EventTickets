@@ -34,13 +34,7 @@ if (isset($_POST['book_event'])) {
         $stmt->execute();
         $stmt->close();
 
-        // Send email
-        $subject = "Your Booking Code";
-        $message = "Thank you for booking!\nYour booking code for the event is: $booking_code";
-        $headers = "From: noreply@universityevents.com";
-        mail($user_email, $subject, $message, $headers);
-
-        echo "<script>alert('Booking successful! Check your email for the code.');</script>";
+    
     }
 }
 
